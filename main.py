@@ -1,9 +1,10 @@
 import json
 import os
 import requests
+from holidays import is_non_working_day
+from datetime import date, datetime
 from requests.auth import HTTPBasicAuth
 from apscheduler.schedulers.blocking import BlockingScheduler
-from datetime import datetime
 from dotenv import load_dotenv
 import pytz
 
@@ -80,6 +81,12 @@ def log_work(issue_key, hours):
 
 
 def daily_job():
+    today = date.today()
+
+    if is_non_working_day(today):
+        print(f"🛑 Skipping Jira logging (non-working day: {today})")
+        return
+
     print(f"\n[{datetime.now()}] Running Jira Auto Logger...\n")
 
     for task in config["tasks"]:
